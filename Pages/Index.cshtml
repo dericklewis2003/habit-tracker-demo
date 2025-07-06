@@ -1,0 +1,294 @@
+﻿@page "{Month:int?}/{Year:int?}"
+@model IndexModel
+@{
+    ViewData["Title"] = "Habit Tracker 2025";
+    var days = Model.Days;
+    var habits = Model.Habits;
+    var memorableMoments = Model.MemorableMoments;
+    var habitEntries = Model.HabitEntries;
+}
+
+@if (string.IsNullOrWhiteSpace(Model.Username))
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card p-4 shadow-sm">
+                    <h4 class="mb-3">Login to Habit Tracker 2025</h4>
+                    <form method="post" asp-page-handler="Login">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="Username" class="form-control" required autofocus />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+<!-- Top bar -->
+<nav class="navbar navbar-light bg-white shadow-sm mb-3 px-3 d-flex justify-content-between align-items-center">
+    <span class="fw-bold">Habit Tracker 2025</span>
+    <div class="d-flex align-items-center gap-3">
+        <a href="/Test" class="btn btn-outline-info btn-sm">🧪 Test</a>
+        <span class="text-muted small">@Model.Username</span>
+        <form method="post" asp-page-handler="Logout" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+        </form>
+    </div>
+</nav>
+
+@if (TempData["Saved"] != null)
+{
+    <div class="alert alert-success text-center py-2" style="margin-bottom:0;">✅ Saved successfully!</div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>ModelState Errors:</strong>
+        <ul>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <li>@error.ErrorMessage</li>
+        }
+        </ul>
+    </div>
+}
+
+<style>
+    .minimal-header {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .minimal-table th, .minimal-table td {
+        border: none !important;
+        background: transparent !important;
+        padding: 0.25rem 0.5rem;
+        vertical-align: middle;
+    }
+    .minimal-table th {
+        font-weight: 500;
+        color: #555;
+        background: #f8f9fa !important;
+    }
+    .minimal-table input[type="text"] {
+        border: none;
+        border-bottom: 1px solid #e0e0e0;
+        background: transparent;
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 2px 4px;
+        outline: none;
+    }
+    .minimal-table input[type="checkbox"] {
+        transform: scale(1.2);
+        margin: 0;
+    }
+    .month-nav {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .save-section {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+</style>
+
+<form method="post" asp-page-handler="Save" asp-route-Month="@Model.Month" asp-route-Year="@Model.Year">
+    <input type="hidden" name="Month" value="@Model.Month" />
+    <input type="hidden" name="Year" value="@Model.Year" />
+    
+    <div class="container-fluid mt-4">
+        <!-- Month Navigation -->
+        <div class="month-nav">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <label class="form-label mb-0 fw-bold">Month:</label>
+                @for (int m = 1; m <= 12; m++)
+                {
+                    <a href="/@Model.GetType().Name.Replace("Model", "")/@m/@Model.Year" class="btn btn-sm @(m == Model.Month ? "btn-primary" : "btn-outline-secondary") me-1 mb-1">
+                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                    </a>
+                }
+                <span class="text-muted">Year: @Model.Year</span>
+                <span class="text-muted">Days: @Model.DaysInMonth</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Memorable Moments Column -->
+            <div class="col-md-4 mb-4">
+                <div class="minimal-header">📝 Memorable Moments</div>
+                <table class="table table-borderless table-sm minimal-table">
+                    <tbody>
+                    @foreach (var day in Model.Days)
+                    {
+                        <tr>
+                            <td class="text-end" style="width: 2em; color: #666; font-weight: 500;">@day</td>
+                            <td>
+                                <input type="text" name="Notes[@day]" 
+                                       placeholder="Highlight or note..." 
+                                       value="@Model.MemorableMoments.FirstOrDefault(m => m.Day == day)?.Note" 
+                                       class="form-control form-control-sm" />
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Habits Tracker Column -->
+            <div class="col-md-4 mb-4">
+                <div class="minimal-header d-flex justify-content-between align-items-center">
+                    <span>✅ Habits</span>
+                </div>
+                @if (Model.Habits.Count > 0)
+                {
+                    <table class="table table-borderless table-sm minimal-table text-center align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width:2em;">Day</th>
+                                @foreach (var habit in Model.Habits)
+                                {
+                                    <th>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span>@habit</span>
+                                        </div>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var day in Model.Days)
+                        {
+                            <tr>
+                                <td style="color: #666; font-weight: 500;">@day</td>
+                                @foreach (var habit in Model.Habits)
+                                {
+                                    var entry = Model.HabitEntries.FirstOrDefault(e => e.Day == day && e.HabitName == habit);
+                                    <td>
+                                        <input type="checkbox" name="HabitChecks[@day][@habit]" 
+                                               @(entry != null && entry.IsCompleted ? "checked" : "") />
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <p>No habits yet. Add your first habit below!</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Graph Column -->
+            <div class="col-md-4 mb-4">
+                <div class="minimal-header">📊 Progress Graph</div>
+                <canvas id="habitGraph" width="100%" height="300"></canvas>
+                <div class="text-muted small mt-2">
+                    Shows completed habits per day for @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Month) 2025
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Section -->
+        <div class="save-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h6 class="mb-0">💾 Save Your Progress</h6>
+                    <small class="text-muted">Click Save to store your habits and memorable moments</small>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fas fa-save"></i> Save All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Add Habit Form (outside main Save form) -->
+<div class="container-fluid mb-3">
+    <form method="post" asp-page-handler="AddHabit" asp-route-Month="@Model.Month" asp-route-Year="@Model.Year" class="d-flex gap-2 align-items-center">
+        <input type="hidden" name="Month" value="@Model.Month" />
+        <input type="hidden" name="Year" value="@Model.Year" />
+        <input type="text" name="NewHabit" class="form-control form-control-sm w-auto" 
+               placeholder="Add habit..." autocomplete="off" />
+        <button type="submit" class="btn btn-outline-primary btn-sm">+</button>
+    </form>
+</div>
+
+<!-- Delete Habit Forms (outside main Save form) -->
+@if (Model.Habits.Count > 0)
+{
+    <div class="container-fluid mb-3">
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var habit in Model.Habits)
+            {
+                <form method="post" asp-page-handler="DeleteHabit" asp-route-Month="@Model.Month" asp-route-Year="@Model.Year" class="d-inline">
+                    <input type="hidden" name="Month" value="@Model.Month" />
+                    <input type="hidden" name="Year" value="@Model.Year" />
+                    <input type="hidden" name="habit" value="@habit" />
+                    <button type="submit" class="btn btn-link btn-sm p-0" 
+                            title="Delete" style="color:#d00;">Delete @habit</button>
+                </form>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const days = Array.from({length: @Model.DaysInMonth}, (_, i) => i + 1);
+        const completedData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HabitsCompletedPerDay));
+        const ctx = document.getElementById('habitGraph').getContext('2d');
+        const habitChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [{
+                    label: 'Habits Completed',
+                    data: completedData,
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#28a745'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1,
+                        title: { display: true, text: 'Completed Habits' },
+                        suggestedMax: @Math.Max(Model.Habits.Count, 1)
+                    },
+                    x: {
+                        title: { display: true, text: 'Day of Month' }
+                    }
+                }
+            }
+        });
+    </script>
+}

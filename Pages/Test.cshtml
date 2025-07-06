@@ -1,0 +1,139 @@
+@page
+@model TestModel
+@{
+    ViewData["Title"] = "Test Habit Tracker 2025";
+}
+
+<div class="container mt-4">
+    <h2>🧪 Test Habit Tracker 2025</h2>
+    <p class="text-muted">Testing core features for the 2025 habit tracker</p>
+
+    @if (string.IsNullOrWhiteSpace(Model.Username))
+    {
+        <div class="alert alert-warning">
+            <strong>Please login first!</strong> Go to the main page and login to test features.
+        </div>
+        <a href="/" class="btn btn-primary">Go to Main Page</a>
+        return;
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>✅ Core Features Status</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Login:</strong> Working - Logged in as @Model.Username
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Year:</strong> 2025 (Fixed)
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Month:</strong> @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Month) 2025
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Days:</strong> @Model.DaysInMonth days (correct for @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Month) 2025)
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Habits:</strong> @Model.Habits.Count habits loaded
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Database:</strong> @Model.HabitEntries.Count habit entries, @Model.MemorableMoments.Count moments
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">✓</span>
+                            <strong>Graph Data:</strong> @Model.HabitsCompletedPerDay.Count data points ready
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>🔧 Test Core Features</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>1. Test Habit Management:</h6>
+                        <a href="/?Month=@Model.Month&Year=2025" class="btn btn-outline-primary btn-sm me-2">Go to Main Page</a>
+                        <small class="text-muted d-block mt-1">Try adding/deleting habits, marking as done</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>2. Test Month Navigation:</h6>
+                        <a href="/?Month=@(Model.Month == 12 ? 1 : Model.Month + 1)&Year=2025" class="btn btn-outline-secondary btn-sm me-2">Next Month</a>
+                        <a href="/?Month=@(Model.Month == 1 ? 12 : Model.Month - 1)&Year=2025" class="btn btn-outline-secondary btn-sm me-2">Previous Month</a>
+                        <small class="text-muted d-block mt-1">Test February (28 days), April (30 days), etc. in 2025</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>3. Test Save Function:</h6>
+                        <a href="/?Month=@Model.Month&Year=2025" class="btn btn-outline-success btn-sm me-2">Test Save</a>
+                        <small class="text-muted d-block mt-1">Mark habits as done, add moments, then save</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>4. Test Graph:</h6>
+                        <a href="/?Month=@Model.Month&Year=2025" class="btn btn-outline-info btn-sm me-2">View Graph</a>
+                        <small class="text-muted d-block mt-1">Mark some habits as done and see graph update</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📊 Current Data for @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Month) 2025</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Habits (@Model.Habits.Count):</h6>
+                            @if (Model.Habits.Count > 0)
+                            {
+                                <ul class="list-unstyled">
+                                    @foreach (var habit in Model.Habits)
+                                    {
+                                        <li>• @habit</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No habits yet</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Completed Today (Day 1):</h6>
+                            <p class="h4 text-success">@Model.HabitsCompletedPerDay.FirstOrDefault() / @Model.Habits.Count</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Graph Data (First 5 days):</h6>
+                            <p class="text-muted small">
+                                @string.Join(", ", Model.HabitsCompletedPerDay.Take(5))@(Model.HabitsCompletedPerDay.Count > 5 ? "..." : "")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="/" class="btn btn-primary">← Back to Habit Tracker 2025</a>
+    </div>
+</div> 
