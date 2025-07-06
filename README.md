@@ -1,3 +1,19 @@
+## Screenshots
+
+   ### Login Page
+![image](https://github.com/user-attachments/assets/ce446743-927f-4646-a051-99c59c2610cd)
+
+
+
+
+
+
+
+
+
+
+
+
 # Habbit Tracker
 
 A minimalist habit tracking and reflection web application built with ASP.NET Core Razor Pages.
