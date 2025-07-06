@@ -1,18 +1,3 @@
-## Screenshots
-
-   ### Login Page
-![image](https://github.com/user-attachments/assets/ce446743-927f-4646-a051-99c59c2610cd)
-
-
-
-
-
-
-
-
-
-
-
 
 # Habbit Tracker
 
@@ -33,6 +18,16 @@ A minimalist habit tracking and reflection web application built with ASP.NET Co
 - **Database**: SQLite with Entity Framework Core
 - **Frontend**: Bootstrap 5, Chart.js
 - **Deployment**: Docker support with docker-compose
+
+## Screenshots
+
+### Login Page
+![image](https://github.com/user-attachments/assets/ce446743-927f-4646-a051-99c59c2610cd)
+
+### Dashboard
+![image](https://github.com/user-attachments/assets/935db328-46f8-4d22-a912-34be11585820)
+
+![image](https://github.com/user-attachments/assets/289b6d44-69b7-4138-92e4-dcd6f27dc600)
 
 ## Quick Start
 
